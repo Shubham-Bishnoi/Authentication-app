@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const path = require("path"); // Import path module to work with file paths
 
 const app = express();
 
@@ -9,8 +10,16 @@ const JWT_SECRET = "random123";
 
 const users = [];
 
-app.get("/", (req, res) => {
-  res.send("Welcome to the Authentication API");
+// app.get("/", (req, res) => {
+//   res.send("Welcome to the Authentication API");
+// });
+
+// Serve static files from the "public" folder
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", function (req, res) {
+  // Use absolute path to the index.html file
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 function logger(req, res, next) {

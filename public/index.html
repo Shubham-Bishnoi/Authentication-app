@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Authentication</title>
+  </head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.7/axios.min.js"></script>
+  <script>
+    // Signup function
+    async function signup() {
+      const username = document.getElementById("signup-username").value;
+      const password = document.getElementById("signup-password").value;
+
+      try {
+        const response = await axios.post("http://localhost:3000/signup", {
+          username: username,
+          password: password,
+        });
+        alert(response.data.message || "Signed up successfully");
+      } catch (error) {
+        alert(error.response.data.message || "Error during signup");
+      }
+    }
+
+    // Signin function
+    async function signin() {
+      const username = document.getElementById("signin-username").value;
+      const password = document.getElementById("signin-password").value;
+
+      try {
+        const response = await axios.post("http://localhost:3000/signin", {
+          username: username,
+          password: password,
+        });
+        localStorage.setItem("token", response.data.token);
+        alert("Signed in successfully");
+      } catch (error) {
+        alert(error.response.data.message || "Error during signin");
+      }
+    }
+
+    // Logout function
+    function logout() {
+      localStorage.removeItem("token");
+      alert("Logged out successfully");
+    }
+
+    // User info function
+    async function getUserInformation() {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Please sign in first.");
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:3000/me", {
+          headers: {
+            Authorization: token,
+          },
+        });
+        document.getElementById("information").textContent =
+          response.data.username;
+      } catch (error) {
+        alert(error.response.data.message || "Error fetching user information");
+      }
+    }
+  </script>
+  <body>
+    <div>
+      <div>
+        <h2>Signup</h2>
+        <input id="signup-username" type="text" placeholder="Username" />
+        <input id="signup-password" type="password" placeholder="Password" />
+        <button onclick="signup()">Submit</button>
+      </div>
+      <div>
+        <h2>Signin</h2>
+        <input id="signin-username" type="text" placeholder="Username" />
+        <input id="signin-password" type="password" placeholder="Password" />
+        <button onclick="signin()">Submit</button>
+      </div>
+      <div>
+        <h2>User Information</h2>
+        <button onclick="getUserInformation()">Get Info</button>
+        <div id="information"></div>
+      </div>
+      <div>
+        <button onclick="logout()">Logout</button>
+      </div>
+    </div>
+  </body>
+</html>
